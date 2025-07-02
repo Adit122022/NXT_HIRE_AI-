@@ -24,8 +24,8 @@ export default function RootLayout({
       <body
         className={`${monaSans.className} antialiased pattern`}
       >
-        {children}
         <Toaster/>
+        {children}
       </body>
     </html>
   );

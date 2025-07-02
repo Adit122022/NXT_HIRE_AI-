@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import FormField from "./FormField";
+import { useRouter } from "next/navigation";
 
 
 
@@ -22,6 +23,7 @@ const authFromSchema =(type :FormType)=>{
 }
 
 const AuthForm = ({type} :{type :FormType}) => {
+    const router = useRouter()
     const formSchema = authFromSchema(type)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -35,8 +37,14 @@ const AuthForm = ({type} :{type :FormType}) => {
  
   function onSubmit(values: z.infer<typeof formSchema>) {
       try {
-        if(type=== 'sign-up') console.log('Sign Up' , values);
-        else console.log('Sign IN' , values);
+        if(type=== 'sign-up'){ console.log('Sign Up' , values);
+            toast.success('Account Created Succsfully.Please Sign In')
+             router.push('/sign-in')
+        }
+        else{ console.log('Sign IN' , values);
+            toast.success('Sign In Succsfully.')
+             router.push('/')
+        }
           
     } catch (error) {
           console.log(error)
@@ -58,8 +66,8 @@ toast.error(`There was an error: ${error}`)
          <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full mt-4 form">
       {!isSignIN && <FormField control={form.control} name={"name"} label={"Name"} placeholder="Your Name"/>}
-      <FormField control={form.control} name={"email"} label={"Email"} placeholder="Your Email"/>
-      <FormField control={form.control} name={"password"} label={"Password"} placeholder="Your Password"/>
+      <FormField control={form.control} name={"email"} type={"email"} label={"Email"} placeholder="Your Email"/>
+      <FormField control={form.control} name={"password"} type={"password"} label={"Password"} placeholder="Your Password"/>
         <Button className="btn" type="submit">{isSignIN ? "Sign IN" : "Create an Account"}</Button>
       </form>
     </Form>
