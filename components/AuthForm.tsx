@@ -22,7 +22,7 @@ const authFromSchema =(type :FormType)=>{
 
 }
 
-const AuthForm = ({type} :{type :FormType}) => {
+const  AuthForm = ({type} :{type :FormType}) => {
     const router = useRouter()
     const formSchema = authFromSchema(type)
 
