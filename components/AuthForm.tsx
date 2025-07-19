@@ -42,18 +42,20 @@ const  AuthForm = ({type} :{type :FormType}) => {
           const {name , email , password} = values;
           const userCredentials = await createUserWithEmailAndPassword(auth ,email ,password);
            const result = await signup({
-            uid :userCredentials.user.uid,
-            name:name!,
-            email, password 
-           })
+  uid: userCredentials.user.uid,
+  name,
+  email,
+});
            if(!result?.success){
-            toast.error(result?.message)
+            toast.error(`${result?.message}`)
             return;
            }
-            toast.success('Account Created Succsfully.Please Sign In')
+            console.log(result)
+            toast.success(`Account Created Succsfully.Please Sign In`)
              router.push('/sign-in')
         }
-        else{ console.log('Sign IN' , values);
+        else{ 
+          // console.log('Sign IN' , values);
             toast.success('Sign In Succsfully.')
              router.push('/')
         }

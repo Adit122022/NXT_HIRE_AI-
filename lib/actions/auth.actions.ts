@@ -10,6 +10,7 @@ const  {uid , email , name} = params;
         return { success:false , message:'User already exists .Please sign in instead.'}
      }
      await db.collection('users').doc(uid).set({ name, email })
+     return { success: true, message: "User created successfully." };
  } catch (e :any) {
      console.log("Error creating a user" , e);
      if(e.code === 'auth/email-already-exists'){
