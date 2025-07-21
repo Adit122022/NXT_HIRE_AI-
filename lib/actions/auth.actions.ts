@@ -20,6 +20,22 @@ const  {uid , email , name} = params;
     } 
     }
 
-    export async function signIn(params:SignInParams) {
+ export async function signIn(params: SignInParams) {
+  const { email } = params;
+  
+  try {
+    // Search user by email (if email is unique)
+    const snapshot = await db.collection("users").where("email", "==", email).get();
 
+    if (snapshot.empty) {
+      return { success: false, message: "This email is not registered. Create a new account first." };
     }
+
+    // User exists → proceed to sign in
+    return { success: true, message: "Signed in successfully." };
+
+  } catch (e: any) {
+    console.log("Error signing in:", e);
+    return { success: false, message: "Failed to sign in. Try again later." };
+  }
+}
