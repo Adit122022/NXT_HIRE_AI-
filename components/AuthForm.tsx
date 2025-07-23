@@ -60,6 +60,10 @@ const  AuthForm = ({type} :{type :FormType}) => {
 
       // ✅ Optional: Verify token on server
       const idToken = await userCredentials.user.getIdToken();
+      if (!idToken) {
+        toast.error("Failed to retrieve ID token. Please try again.");
+        return;
+      }
       const result = await signIn({ email, idToken });
 
       if (!result?.success) {

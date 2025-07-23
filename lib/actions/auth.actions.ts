@@ -13,7 +13,7 @@ const  {uid , email , name} = params;
         return { success:false , message:'User already exists .Please sign in instead.'}
      }
      await db.collection('users').doc(uid).set({ name, email })
-     return { success: true, message: "User created successfully." };
+     return { success: true, message: "User created successfully.Please sign in now" };
  } catch (e :any) {
      console.log("Error creating a user" , e);
      if(e.code === 'auth/email-already-exists'){
@@ -49,4 +49,33 @@ const  {uid , email , name} = params;
     console.log("Error signing in:", e);
     return { success: false, message: "Failed to sign in. Try again later." };
   }
+}
+export async function getCurrentUser(): Promise<User | null> {
+  const cookieStore =await cookies();
+  const sessionCookie = cookieStore.get('session')?.value;
+  if (!sessionCookie) {
+    return null;
+  }
+  try {
+    const decodedToken = await auth.verifySessionCookie(sessionCookie, true);
+    const userRecord = await db.collection("users").doc(decodedToken.uid).get();
+    if (!userRecord.exists) {
+      return null;
+    }
+    return {
+...userRecord.data(),
+      id: decodedToken.id,
+      email: decodedToken.email || "",
+      name: userRecord.data()?.name || "",
+    };
+  } catch (e) {
+    console.error("Error verifying session cookie:", e);
+    return null;
+  }
+}
+
+export async function isAuthenticated() {
+  const user = await  getCurrentUser();
+  return !!user;    // if user is null, it return false, otherwise true
+  
 }
