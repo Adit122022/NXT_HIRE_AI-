@@ -40,7 +40,7 @@ const  AuthForm = ({type} :{type :FormType}) => {
       try {
         if(type=== 'sign-up'){
           const {name , email , password} = values;
-          const userCredentials = await createUserWithEmailAndPassword(auth ,email ,password);
+          const userCredentials = await createUserWithEmailAndPassword(auth ,email ,password);  // THIS IS FOR CHECKING OR AUTHENTCATING  
            const result = await signup({
   uid: userCredentials.user.uid,
   name,
@@ -72,7 +72,7 @@ const  AuthForm = ({type} :{type :FormType}) => {
         }
           
     } catch (error) {
-          console.log(error)
+          console.log(error);
 toast.error(`There was an error: ${error}`)        
       }
 

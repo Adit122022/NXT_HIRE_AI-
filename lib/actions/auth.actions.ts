@@ -1,7 +1,10 @@
 'use server'
 
-import { db } from "@/firebase/admin";
+import { auth, db } from "@/firebase/admin";
+import { cookies } from "next/headers";
 
+
+const ONE_WEEK = 60 * 60 * 24 *7    //60sec 60min 24 hrs  7 days (1 week) 1000 miliseconds
 export async function signup(params :SignUpParams){
 const  {uid , email , name} = params;
  try {
@@ -19,22 +22,30 @@ const  {uid , email , name} = params;
      return {success : false , message: ' Failed to create an account.'} 
     } 
     }
-
+  export async function setSessionCookie(idToken: string){
+    const cookieStore  = await cookies();
+    const sessionCookie = await auth.createSessionCookie(idToken , { expiresIn :ONE_WEEK *1000} ) 
+     cookieStore.set('session',sessionCookie, {
+      maxAge :ONE_WEEK,
+      httpOnly:true,
+      secure:process.env.NODE_ENV ==="production",
+      path:'/',
+      sameSite:'lax'
+    })
+  }
  export async function signIn(params: SignInParams) {
-  const { email } = params;
+  const { email,idToken } = params;
   
   try {
-    // Search user by email (if email is unique)
-    const snapshot = await db.collection("users").where("email", "==", email).get();
+    const userRecord = await auth.getUserByEmail(email);
 
-    if (snapshot.empty) {
+    if (!userRecord) {
       return { success: false, message: "This email is not registered. Create a new account first." };
     }
-
-    // User exists → proceed to sign in
+    await setSessionCookie(idToken)
     return { success: true, message: "Signed in successfully." };
 
-  } catch (e: any) {
+  } catch (e) {
     console.log("Error signing in:", e);
     return { success: false, message: "Failed to sign in. Try again later." };
   }
