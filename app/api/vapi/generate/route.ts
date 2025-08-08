@@ -23,6 +23,7 @@ export async function POST(request: Request) {
         
         Thank you! <3
     `,
+   
     });
 
     const interview = {
@@ -38,7 +39,6 @@ export async function POST(request: Request) {
     };
 
     await db.collection("interviews").add(interview);
-
     return Response.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Error:", error);
