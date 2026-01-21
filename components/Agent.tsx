@@ -29,6 +29,7 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
         const onCallStart =()=>  setCallStatus(CallStatus.ACTIVE);
         const onCallEnd =()=>  setCallStatus(CallStatus.FINISHED);
         const onMessage =(message:Message)=>{
+            console.log("Full message object:", message);
             if(message.type ==='transcript' && message.transcriptType === 'final'){
                 const newMessage ={ role: message.role , content : message.transcript }
                 setMessages((prev)=> [...prev ,newMessage]);
