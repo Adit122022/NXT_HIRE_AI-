@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react';
 
 
 interface SavedMessage {
-    role :'user' | 'system' |'assistant';
-    content:string;
+    role: 'user' | 'system' | 'assistant';
+    content: string;
 }
 enum CallStatus {
     INACTIVE = 'INACTIVE',
@@ -19,63 +19,63 @@ enum CallStatus {
 const Agent = ({ userName, userId, type }: AgentProps) => {
 
     const router = useRouter();
-    const [isSpeaking,setIsSpeaking] = useState(false);
-    const [callStatus,setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE)
-    const [messages,setMessages] = useState<SavedMessage[]>([]);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE)
+    const [messages, setMessages] = useState<SavedMessage[]>([]);
     const LastMessage = messages[messages.length - 1]
 
 
-     useEffect(()=>{
-        const onCallStart =()=>  setCallStatus(CallStatus.ACTIVE);
-        const onCallEnd =()=>  setCallStatus(CallStatus.FINISHED);
-        const onMessage =(message:Message)=>{
+    useEffect(() => {
+        const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
+        const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+        const onMessage = (message: Message) => {
             console.log("Full message object:", message);
-            if(message.type ==='transcript' && message.transcriptType === 'final'){
-                const newMessage ={ role: message.role , content : message.transcript }
-                setMessages((prev)=> [...prev ,newMessage]);
+            if (message.type === 'transcript' && message.transcriptType === 'final') {
+                const newMessage = { role: message.role, content: message.transcript }
+                setMessages((prev) => [...prev, newMessage]);
             }
         }
-        const onSpeechStart = ()=>setIsSpeaking(true);
-        const onSpeechEnd = ()=>setIsSpeaking(false);
-        const onError = (error:Error)=>console.log('Error' ,error);
+        const onSpeechStart = () => setIsSpeaking(true);
+        const onSpeechEnd = () => setIsSpeaking(false);
+        const onError = (error: Error) => console.log('Error', error);
         // event listeners
-          vapi.on('call-start',onCallStart);
-          vapi.on('call-end',onCallEnd);
-          vapi.on('message', onMessage);
-          vapi.on('speech-start',onSpeechStart);
-          vapi.on('speech-end', onSpeechEnd);
-          vapi.on('error',onError);
+        vapi.on('call-start', onCallStart);
+        vapi.on('call-end', onCallEnd);
+        vapi.on('message', onMessage);
+        vapi.on('speech-start', onSpeechStart);
+        vapi.on('speech-end', onSpeechEnd);
+        vapi.on('error', onError);
 
-        return ()=>{
-          vapi.off('call-start',onCallStart);
-          vapi.off('call-end',onCallEnd);
-          vapi.off('message', onMessage);
-          vapi.off('speech-start',onSpeechStart);
-          vapi.off('speech-end', onSpeechEnd);
-          vapi.off('error',onError);
+        return () => {
+            vapi.off('call-start', onCallStart);
+            vapi.off('call-end', onCallEnd);
+            vapi.off('message', onMessage);
+            vapi.off('speech-start', onSpeechStart);
+            vapi.off('speech-end', onSpeechEnd);
+            vapi.off('error', onError);
         }
-     },[])
+    }, [])
 
-     useEffect(()=>{
-        if(callStatus=== CallStatus.FINISHED) router.push('/');
-     },[messages,callStatus,type,userId])
+    useEffect(() => {
+        if (callStatus === CallStatus.FINISHED) router.push('/');
+    }, [messages, callStatus, type, userId])
 
-      const handleCall = async() =>{
+    const handleCall = async () => {
         setCallStatus(CallStatus.CONNECTING)
-        await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID! ,{
-            variableValues:{
-                username:userName,
-                userid:userId,
+        await vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID!, {
+            variableValues: {
+                username: userName,
+                userid: userId,
 
             }
         })
-      }
-      const handleDisconnect = async() =>{
-setCallStatus(CallStatus.FINISHED);
-vapi.stop();
-      }
-       const latestMessage = messages[messages.length -1]?.content;
-       const isCallInactiveOrFinished =callStatus ===CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
+    }
+    const handleDisconnect = async () => {
+        setCallStatus(CallStatus.FINISHED);
+        vapi.stop();
+    }
+    const latestMessage = messages[messages.length - 1]?.content;
+    const isCallInactiveOrFinished = callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
     return (
         <>
             <div className="call-view">
@@ -100,7 +100,7 @@ vapi.stop();
             {messages.length > 0 && (
                 <div className="transcript-border">
                     <div className="transcript">
-                        <p key={latestMessage} className={cn("transition-all duration-500 opacity-0" , 'animate-fadeIn opacity-100')}>
+                        <p key={latestMessage} className={cn("transition-all duration-500 opacity-0", 'animate-fadeIn opacity-100')}>
                             {latestMessage}
                         </p>
                     </div>
